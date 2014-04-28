@@ -10,13 +10,14 @@
 // The following resources are part of this group:
 // * /airlines
 // * /airports
+// * /allegiantRoutes
 // * /scheduleFromDate
 // * /scheduleToDate
 // * /weather
 // * /newsFromKeyword
 // * /flickrFromKeyword
+// * /flickrStaticImgUrl
 // * /hotels
-
 
 
 
@@ -27,10 +28,12 @@ var express = require('express');
 
 var http = require("http");
 var url = require("url");
+var fs = require('fs');
 var querystring = require("querystring");
 var parseString = require('xml2js').parseString;
 var options = {};
 var urlString = {};
+var postData = {};
 
 
 
@@ -91,6 +94,35 @@ app.get('/airports', function(req, res, next) {
     };
 
     next();
+});
+
+
+
+// Allegiant Seasonal Flights API: `/allegiantRoutes`
+// ----------------
+// The Allegiant Seasonal Flights API provides Allegiant route information. Origins and destinations are returned by the airport code.
+
+app.get('/allegiantRoutes', function(req, res, next) {
+
+    fs.readFile('./allegiant_flights.json', 'utf8', function (err,data) {
+        if (err) { console.error(err); }
+
+        var store = data;
+        console.log(store);
+
+        // JSONP support
+        // ----------------
+        // Wraps json object in callback.
+        if (urlString.queryparam.callback && urlString.queryparam.callback != '?') {
+            store = store.replace(/'/g, "\\'");
+            jsonp_store = urlString.queryparam.callback + "('" + store + "');";
+            store = jsonp_store;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json'});
+        res.write(store);
+        res.end();
+    });
 });
 
 
@@ -231,6 +263,64 @@ app.get('/flickrFromKeyword', function(req, res, next) {
 
 
 
+// Flickr Static Image API: `/flickrStaticImgUrl`
+// ----------------
+// The Flickr Static Image API removes the standard Flickr protection code and returns a URL of just the static image.
+
+// PARAMETERS
+// * `url`	The url of the image of which you are wanting the static version.
+
+app.get('/flickrStaticImgUrl', function(req, res, next) {
+
+    flickrUrl = urlString.queryparam.url;
+    var photoID = flickrUrl.match(/\/photos\/(.*)/)[1].split('/')[1];
+    postData = querystring.stringify({'photo_id':photoID});
+
+    var flickrReq = http.request({
+        host: 'www.flickr.com',
+        port: 80,
+        path: '/services/rest/?method=flickr.photos.getInfo&format=json&api_key=a66ae3b787a9d02a3da0f2b63ac621be',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(postData)
+        }
+    }, function(response) {
+        var flickrStore = '';
+
+        response.setEncoding('utf8');
+        response.on('data', function (chunk) {
+            flickrStore += chunk;
+        });
+
+        response.on('end', function() {
+            flickrStore = flickrStore.replace('jsonFlickrApi(', '');
+            flickrStore = flickrStore.replace(/\)(?=[^.]*$)/, '');
+            flickrStore = JSON.parse(flickrStore);
+            flickrStore = 'http://farm'+flickrStore.photo.farm+'.static.flickr.com/'+flickrStore.photo.server+'/'+photoID+'_'+flickrStore.photo.secret+'.jpg';
+
+            // JSONP support
+            // ----------------
+            // Wraps json object in callback.
+            if (urlString.queryparam.callback && urlString.queryparam.callback != '?') {
+                jsonp_store = urlString.queryparam.callback + "('" + flickrStore + "');";
+                flickrStore = jsonp_store;
+            }
+
+            res.write(flickrStore);
+            console.log(flickrStore);
+            res.end();
+
+        })
+    });
+
+    flickrReq.write(postData);
+    flickrReq.end();
+
+});
+
+
+
 // Hotel API: `/hotels`
 // ----------------
 // The Hotel API returns a list of hotels and relative information based on a given location.
@@ -285,7 +375,7 @@ app.use(function(req, res) {
         response.on('end', function() {
             if (options.dataType=="XML") {
                 parseString(store, function (err, result) {
-                    //if (err) { console.error(err); }
+                    if (err) { console.error(err); }
                     if (result!=undefined) {
                         store = typeof result === 'object' ? JSON.stringify(result) : result;
                     }
