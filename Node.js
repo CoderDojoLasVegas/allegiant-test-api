@@ -39,7 +39,7 @@ var postData = {};
 
 // Base URI:
 // ----------------
-// http://localhost:8080
+// http://allegiant.nathansculli.com:8081
 var app = express();
 var server = http.createServer(app).listen(8080);
 
