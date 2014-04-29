@@ -73,11 +73,13 @@
 <ul>
 <li>/airlines</li>
 <li>/airports</li>
+<li>/allegiantRoutes</li>
 <li>/scheduleFromDate</li>
 <li>/scheduleToDate</li>
 <li>/weather</li>
 <li>/newsFromKeyword</li>
 <li>/flickrFromKeyword</li>
+<li>/flickrStaticImgUrl</li>
 <li>/hotels</li>
 </ul>
 
@@ -89,15 +91,16 @@
 
 
 
-
 <span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
 
 <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"http"</span>);
 <span class="hljs-keyword">var</span> url = <span class="hljs-built_in">require</span>(<span class="hljs-string">"url"</span>);
+<span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
 <span class="hljs-keyword">var</span> querystring = <span class="hljs-built_in">require</span>(<span class="hljs-string">"querystring"</span>);
 <span class="hljs-keyword">var</span> parseString = <span class="hljs-built_in">require</span>(<span class="hljs-string">'xml2js'</span>).parseString;
 <span class="hljs-keyword">var</span> options = {};
-<span class="hljs-keyword">var</span> urlString = {};</pre></div></div>
+<span class="hljs-keyword">var</span> urlString = {};
+<span class="hljs-keyword">var</span> postData = {};</pre></div></div>
             
         </li>
         
@@ -231,7 +234,7 @@ app.get(<span class="hljs-string">'/airports'</span>, <span class="hljs-function
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
-              <h2 id="departing-flight-schedules-api-schedulefromdate-">Departing Flight Schedules API: <code>/scheduleFromDate</code></h2>
+              <h2 id="allegiant-seasonal-flights-api-allegiantroutes-">Allegiant Seasonal Flights API: <code>/allegiantRoutes</code></h2>
 
             </div>
             
@@ -244,9 +247,18 @@ app.get(<span class="hljs-string">'/airports'</span>, <span class="hljs-function
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <p>The Schedules API offers information on future scheduled flights, departing on the given date.</p>
+              <p>The Allegiant Seasonal Flights API provides Allegiant route information. Origins and destinations are returned by the airport code.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>
+app.get(<span class="hljs-string">'/allegiantRoutes'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+
+    fs.readFile(<span class="hljs-string">'./allegiant_flights.json'</span>, <span class="hljs-string">'utf8'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err,data)</span> {</span>
+        <span class="hljs-keyword">if</span> (err) { console.error(err); }
+
+        <span class="hljs-keyword">var</span> store = data;
+        console.log(store);</pre></div></div>
             
         </li>
         
@@ -256,6 +268,70 @@ app.get(<span class="hljs-string">'/airports'</span>, <span class="hljs-function
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h2 id="jsonp-support">JSONP support</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Wraps json object in callback.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (urlString.queryparam.callback &amp;&amp; urlString.queryparam.callback != <span class="hljs-string">'?'</span>) {
+            store = store.replace(<span class="hljs-regexp">/'/g</span>, <span class="hljs-string">"\\'"</span>);
+            jsonp_store = urlString.queryparam.callback + <span class="hljs-string">"('"</span> + store + <span class="hljs-string">"');"</span>;
+            store = jsonp_store;
+        }
+
+        res.writeHead(<span class="hljs-number">200</span>, { <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/json'</span>});
+        res.write(store);
+        res.end();
+    });
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <h2 id="departing-flight-schedules-api-schedulefromdate-">Departing Flight Schedules API: <code>/scheduleFromDate</code></h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>The Schedules API offers information on future scheduled flights, departing on the given date.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>PARAMETERS</p>
 <ul>
@@ -291,11 +367,11 @@ app.get(<span class="hljs-string">'/scheduleFromDate'</span>, <span class="hljs-
         </li>
         
         
-        <li id="section-14">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <h2 id="arriving-flight-schedules-api-scheduletodate-">Arriving Flight Schedules API: <code>/scheduleToDate</code></h2>
 
@@ -304,11 +380,11 @@ app.get(<span class="hljs-string">'/scheduleFromDate'</span>, <span class="hljs-
         </li>
         
         
-        <li id="section-15">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>The Schedules API offers information on future scheduled flights, arriving on the given date.</p>
 
@@ -317,11 +393,11 @@ app.get(<span class="hljs-string">'/scheduleFromDate'</span>, <span class="hljs-
         </li>
         
         
-        <li id="section-16">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>PARAMETERS</p>
 <ul>
@@ -357,11 +433,11 @@ app.get(<span class="hljs-string">'/scheduleToDate'</span>, <span class="hljs-fu
         </li>
         
         
-        <li id="section-17">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <h2 id="weather-api-weather-">Weather API: <code>/weather</code></h2>
 
@@ -370,11 +446,11 @@ app.get(<span class="hljs-string">'/scheduleToDate'</span>, <span class="hljs-fu
         </li>
         
         
-        <li id="section-18">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p>The Weather API returns weather information for the given airport.</p>
 
@@ -383,11 +459,11 @@ app.get(<span class="hljs-string">'/scheduleToDate'</span>, <span class="hljs-fu
         </li>
         
         
-        <li id="section-19">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <p>PARAMETERS</p>
 <ul>
@@ -415,11 +491,11 @@ app.get(<span class="hljs-string">'/weather'</span>, <span class="hljs-function"
         </li>
         
         
-        <li id="section-20">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <h2 id="news-api-newsfromkeyword-">News API: <code>/newsFromKeyword</code></h2>
 
@@ -428,11 +504,11 @@ app.get(<span class="hljs-string">'/weather'</span>, <span class="hljs-function"
         </li>
         
         
-        <li id="section-21">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <p>The News API returns headlines pertaining to the given keyword.</p>
 
@@ -441,11 +517,11 @@ app.get(<span class="hljs-string">'/weather'</span>, <span class="hljs-function"
         </li>
         
         
-        <li id="section-22">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <p>PARAMETERS</p>
 <ul>
@@ -473,11 +549,11 @@ app.get(<span class="hljs-string">'/newsFromKeyword'</span>, <span class="hljs-f
         </li>
         
         
-        <li id="section-23">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <h2 id="flickr-api-flickrfromkeyword-">Flickr API: <code>/flickrFromKeyword</code></h2>
 
@@ -486,11 +562,11 @@ app.get(<span class="hljs-string">'/newsFromKeyword'</span>, <span class="hljs-f
         </li>
         
         
-        <li id="section-24">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <p>The Flickr API returns images and relative information tagged with the given keyword.</p>
 
@@ -499,11 +575,11 @@ app.get(<span class="hljs-string">'/newsFromKeyword'</span>, <span class="hljs-f
         </li>
         
         
-        <li id="section-25">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-25">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>PARAMETERS</p>
 <ul>
@@ -531,11 +607,126 @@ app.get(<span class="hljs-string">'/flickrFromKeyword'</span>, <span class="hljs
         </li>
         
         
-        <li id="section-26">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-26">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <h2 id="flickr-static-image-api-flickrstaticimgurl-">Flickr Static Image API: <code>/flickrStaticImgUrl</code></h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>The Flickr Static Image API removes the standard Flickr protection code and returns a URL of just the static image.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>PARAMETERS</p>
+<ul>
+<li><code>url</code>    The url of the image of which you are wanting the static version.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+app.get(<span class="hljs-string">'/flickrStaticImgUrl'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+
+    flickrUrl = urlString.queryparam.url;
+    <span class="hljs-keyword">var</span> photoID = flickrUrl.match(<span class="hljs-regexp">/\/photos\/(.*)/</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">'/'</span>)[<span class="hljs-number">1</span>];
+    postData = querystring.stringify({<span class="hljs-string">'photo_id'</span>:photoID});
+
+    <span class="hljs-keyword">var</span> flickrReq = http.request({
+        host: <span class="hljs-string">'www.flickr.com'</span>,
+        port: <span class="hljs-number">80</span>,
+        path: <span class="hljs-string">'/services/rest/?method=flickr.photos.getInfo&amp;format=json&amp;api_key=a66ae3b787a9d02a3da0f2b63ac621be'</span>,
+        method: <span class="hljs-string">'POST'</span>,
+        headers: {
+            <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/x-www-form-urlencoded'</span>,
+            <span class="hljs-string">'Content-Length'</span>: Buffer.byteLength(postData)
+        }
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(response)</span> {</span>
+        <span class="hljs-keyword">var</span> flickrStore = <span class="hljs-string">''</span>;
+
+        response.setEncoding(<span class="hljs-string">'utf8'</span>);
+        response.on(<span class="hljs-string">'data'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(chunk)</span> {</span>
+            flickrStore += chunk;
+        });
+
+        response.on(<span class="hljs-string">'end'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+            flickrStore = flickrStore.replace(<span class="hljs-string">'jsonFlickrApi('</span>, <span class="hljs-string">''</span>);
+            flickrStore = flickrStore.replace(<span class="hljs-regexp">/\)(?=[^.]*$)/</span>, <span class="hljs-string">''</span>);
+            flickrStore = <span class="hljs-built_in">JSON</span>.parse(flickrStore);
+            flickrStore = <span class="hljs-string">'http://farm'</span>+flickrStore.photo.farm+<span class="hljs-string">'.static.flickr.com/'</span>+flickrStore.photo.server+<span class="hljs-string">'/'</span>+photoID+<span class="hljs-string">'_'</span>+flickrStore.photo.secret+<span class="hljs-string">'.jpg'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <h2 id="jsonp-support">JSONP support</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Wraps json object in callback.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">if</span> (urlString.queryparam.callback &amp;&amp; urlString.queryparam.callback != <span class="hljs-string">'?'</span>) {
+                jsonp_store = urlString.queryparam.callback + <span class="hljs-string">"('"</span> + flickrStore + <span class="hljs-string">"');"</span>;
+                flickrStore = jsonp_store;
+            }
+
+            res.write(flickrStore);
+            console.log(flickrStore);
+            res.end();
+
+        })
+    });
+
+    flickrReq.write(postData);
+    flickrReq.end();
+
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <h2 id="hotel-api-hotels-">Hotel API: <code>/hotels</code></h2>
 
@@ -544,11 +735,11 @@ app.get(<span class="hljs-string">'/flickrFromKeyword'</span>, <span class="hljs
         </li>
         
         
-        <li id="section-27">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
               <p>The Hotel API returns a list of hotels and relative information based on a given location.</p>
 
@@ -557,11 +748,11 @@ app.get(<span class="hljs-string">'/flickrFromKeyword'</span>, <span class="hljs
         </li>
         
         
-        <li id="section-28">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <p>PARAMETERS</p>
 <ul>
@@ -617,22 +808,9 @@ app.use(<span class="hljs-function"><span class="hljs-keyword">function</span><s
 
         response.on(<span class="hljs-string">'end'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
             <span class="hljs-keyword">if</span> (options.dataType==<span class="hljs-string">"XML"</span>) {
-                parseString(store, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, result)</span> {</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-29">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
-              </div>
-              <p>if (err) { console.error(err); }</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (result!=<span class="hljs-literal">undefined</span>) {
+                parseString(store, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, result)</span> {</span>
+                    <span class="hljs-keyword">if</span> (err) { console.error(err); }
+                    <span class="hljs-keyword">if</span> (result!=<span class="hljs-literal">undefined</span>) {
                         store = <span class="hljs-keyword">typeof</span> result === <span class="hljs-string">'object'</span> ? <span class="hljs-built_in">JSON</span>.stringify(result) : result;
                     }
                 });
@@ -641,11 +819,11 @@ app.use(<span class="hljs-function"><span class="hljs-keyword">function</span><s
         </li>
         
         
-        <li id="section-30">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <h2 id="jsonp-support">JSONP support</h2>
 
@@ -654,11 +832,11 @@ app.use(<span class="hljs-function"><span class="hljs-keyword">function</span><s
         </li>
         
         
-        <li id="section-31">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>Wraps json object in callback.</p>
 
