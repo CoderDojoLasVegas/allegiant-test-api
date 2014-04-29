@@ -57,6 +57,19 @@ app.use(function(req, res, next) {
     next();
 });
 
+// Airlines API
+// -------------
+// Just a little get to know me message.
+app.get('/', function (req, res) {
+    welcome = {
+        "message": "Welcome to the Allegiant Air Challenge API",
+        "docs": "http://allegiant.nathansculli.com/docs"
+    };
+    
+    res.writeHead(200, { 'Content-Type': 'application/json'});
+    res.write(welcome);
+    res.end();
+});
 
 
 
