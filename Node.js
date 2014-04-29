@@ -67,7 +67,7 @@ app.get('/', function (req, res) {
     };
     
     res.writeHead(200, { 'Content-Type': 'application/json'});
-    res.write(welcome);
+    res.write(JSON.stringify(welcome));
     res.end();
 });
 
