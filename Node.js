@@ -39,9 +39,9 @@ var postData = {};
 
 // Base URI:
 // ----------------
-// http://allegiant.nathansculli.com:8081
+// http://localhost:8080
 var app = express();
-var server = http.createServer(app).listen(8081);
+var server = http.createServer(app).listen(8080);
 
 
 
@@ -57,19 +57,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-// Airlines API
-// -------------
-// Just a little get to know me message.
-app.get('/', function (req, res) {
-    welcome = {
-        "message": "Welcome to the Allegiant Air Challenge API",
-        "docs": "http://allegiant.nathansculli.com/docs"
-    };
-    
-    res.writeHead(200, { 'Content-Type': 'application/json'});
-    res.write(JSON.stringify(welcome));
-    res.end();
-});
 
 
 
@@ -399,8 +386,7 @@ app.use(function(req, res) {
             // ----------------
             // Wraps json object in callback.
             if (urlString.queryparam.callback && urlString.queryparam.callback != '?') {
-                store = store.replace(/'/g, "\\'");
-                jsonp_store = urlString.queryparam.callback + "('" + store + "');";
+                jsonp_store = urlString.queryparam.callback + "(" + store + ");";
                 store = jsonp_store;
             }
 
