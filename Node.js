@@ -46,18 +46,6 @@ var server = http.createServer(app).listen(8080);
 
 
 
-app.use(function(req, res, next) {
-    res.header("Content-Type", "text/plain");
-
-    urlString = {
-        pathname: req.path,
-        queryparam: req.query
-    };
-
-    next();
-});
-
-
 
 
 // Airlines API: `/airlines`
@@ -65,6 +53,13 @@ app.use(function(req, res, next) {
 // The Airlines API provides basic reference data about one or more airlines.
 
 app.get('/airlines', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("https");
     options = {
         /*remove protocol from url*/
@@ -84,6 +79,13 @@ app.get('/airlines', function(req, res, next) {
 // The Airports API provides basic reference data about one or more airports.
 
 app.get('/airports', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("https");
     options = {
         /*remove protocol from url*/
@@ -104,18 +106,26 @@ app.get('/airports', function(req, res, next) {
 
 app.get('/allegiantRoutes', function(req, res, next) {
 
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
+
+
     fs.readFile('./allegiant_flights.json', 'utf8', function (err,data) {
         if (err) { console.error(err); }
 
         var store = data;
-        console.log(store);
 
         // JSONP support
         // ----------------
         // Wraps json object in callback.
         if (urlString.queryparam.callback && urlString.queryparam.callback != '?') {
             store = store.replace(/'/g, "\\'");
-            jsonp_store = urlString.queryparam.callback + "('" + store + "');";
+            jsonp_store = urlString.queryparam.callback + "(" + store + ");";
             store = jsonp_store;
         }
 
@@ -139,6 +149,13 @@ app.get('/allegiantRoutes', function(req, res, next) {
 // * `day`					Day of month of the departure date.
 
 app.get('/scheduleFromDate', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("https");
     departureAirportCode = encodeURIComponent(urlString.queryparam.departureAirportCode);
     arrivalAirportCode = encodeURIComponent(urlString.queryparam.arrivalAirportCode);
@@ -171,6 +188,13 @@ app.get('/scheduleFromDate', function(req, res, next) {
 // * `day`					Day of month of the departure date.
 
 app.get('/scheduleToDate', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("https");
     departureAirportCode = encodeURIComponent(urlString.queryparam.departureAirportCode);
     arrivalAirportCode = encodeURIComponent(urlString.queryparam.arrivalAirportCode);
@@ -199,6 +223,13 @@ app.get('/scheduleToDate', function(req, res, next) {
 // * `airport`	The code of the airport.
 
 app.get('/weather', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("https");
     airport = encodeURIComponent(urlString.queryparam.airport);
 
@@ -207,7 +238,8 @@ app.get('/weather', function(req, res, next) {
         host:"api.flightstats.com",
         path:"/flex/weather/rest/v1/json/all/"+airport+"?appId=0980daa7&appKey=7c87bd8cc1bd7d46d633f4d944cd7d8d",
         dataType:"json",
-        method:"GET"
+        method:"GET",
+        callback:urlString.queryparam
     };
 
     next();
@@ -223,6 +255,13 @@ app.get('/weather', function(req, res, next) {
 // * `p`	The keyword you want to search for.
 
 app.get('/newsFromKeyword', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("https");
     p = encodeURIComponent(urlString.queryparam.p);
 
@@ -247,6 +286,13 @@ app.get('/newsFromKeyword', function(req, res, next) {
 // * `tags`	The tag you want to search for.
 
 app.get('/flickrFromKeyword', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("http");
     tags = encodeURIComponent(urlString.queryparam.tags);
 
@@ -271,6 +317,12 @@ app.get('/flickrFromKeyword', function(req, res, next) {
 // * `url`	The url of the image of which you are wanting the static version.
 
 app.get('/flickrStaticImgUrl', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
 
     flickrUrl = urlString.queryparam.url;
     var photoID = flickrUrl.match(/\/photos\/(.*)/)[1].split('/')[1];
@@ -307,8 +359,8 @@ app.get('/flickrStaticImgUrl', function(req, res, next) {
                 flickrStore = jsonp_store;
             }
 
+            res.writeHead(200, { 'Content-Type': 'application/json'});
             res.write(flickrStore);
-            console.log(flickrStore);
             res.end();
 
         })
@@ -337,6 +389,13 @@ app.get('/flickrStaticImgUrl', function(req, res, next) {
 // * `numOfResults`	    The number of results you want returned.
 
 app.get('/hotels', function(req, res, next) {
+    res.header("Content-Type", "text/plain");
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = require("https");
     city = encodeURIComponent(urlString.queryparam.city);
     state = encodeURIComponent(urlString.queryparam.state);
@@ -362,6 +421,13 @@ app.get('/hotels', function(req, res, next) {
 
 
 app.use(function(req, res) {
+    res.header("Content-Type", "text/plain");
+
+    var urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     var store = " ";
 
     http.request(options, function(response) {
