@@ -124,26 +124,12 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p><a href="http://allegiant.nathansculli.com:8081">http://allegiant.nathansculli.com:8081</a></p>
+              <p><a href="http://localhost:8080">http://localhost:8080</a></p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> app = express();
-<span class="hljs-keyword">var</span> server = http.createServer(app).listen(<span class="hljs-number">8080</span>);
-
-
-
-
-app.use(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
-    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
-
-    urlString = {
-        pathname: req.path,
-        queryparam: req.query
-    };
-
-    next();
-});</pre></div></div>
+<span class="hljs-keyword">var</span> server = http.createServer(app).listen(<span class="hljs-number">8080</span>);</pre></div></div>
             
         </li>
         
@@ -173,6 +159,13 @@ app.use(<span class="hljs-function"><span class="hljs-keyword">function</span><s
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/airlines'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"https"</span>);
     options = {
         <span class="hljs-comment">/*remove protocol from url*/</span>
@@ -213,6 +206,13 @@ app.get(<span class="hljs-string">'/airlines'</span>, <span class="hljs-function
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/airports'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"https"</span>);
     options = {
         <span class="hljs-comment">/*remove protocol from url*/</span>
@@ -254,11 +254,19 @@ app.get(<span class="hljs-string">'/airports'</span>, <span class="hljs-function
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/allegiantRoutes'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
 
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
+
+
     fs.readFile(<span class="hljs-string">'./allegiant_flights.json'</span>, <span class="hljs-string">'utf8'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err,data)</span> {</span>
         <span class="hljs-keyword">if</span> (err) { console.error(err); }
 
-        <span class="hljs-keyword">var</span> store = data;
-        console.log(store);</pre></div></div>
+        <span class="hljs-keyword">var</span> store = data;</pre></div></div>
             
         </li>
         
@@ -288,7 +296,7 @@ app.get(<span class="hljs-string">'/allegiantRoutes'</span>, <span class="hljs-f
             
             <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (urlString.queryparam.callback &amp;&amp; urlString.queryparam.callback != <span class="hljs-string">'?'</span>) {
             store = store.replace(<span class="hljs-regexp">/'/g</span>, <span class="hljs-string">"\\'"</span>);
-            jsonp_store = urlString.queryparam.callback + <span class="hljs-string">"('"</span> + store + <span class="hljs-string">"');"</span>;
+            jsonp_store = urlString.queryparam.callback + <span class="hljs-string">"("</span> + store + <span class="hljs-string">");"</span>;
             store = jsonp_store;
         }
 
@@ -346,6 +354,13 @@ app.get(<span class="hljs-string">'/allegiantRoutes'</span>, <span class="hljs-f
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/scheduleFromDate'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"https"</span>);
     departureAirportCode = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.departureAirportCode);
     arrivalAirportCode = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.arrivalAirportCode);
@@ -412,6 +427,13 @@ app.get(<span class="hljs-string">'/scheduleFromDate'</span>, <span class="hljs-
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/scheduleToDate'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"https"</span>);
     departureAirportCode = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.departureAirportCode);
     arrivalAirportCode = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.arrivalAirportCode);
@@ -474,6 +496,13 @@ app.get(<span class="hljs-string">'/scheduleToDate'</span>, <span class="hljs-fu
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/weather'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"https"</span>);
     airport = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.airport);
 
@@ -482,7 +511,8 @@ app.get(<span class="hljs-string">'/weather'</span>, <span class="hljs-function"
         host:<span class="hljs-string">"api.flightstats.com"</span>,
         path:<span class="hljs-string">"/flex/weather/rest/v1/json/all/"</span>+airport+<span class="hljs-string">"?appId=0980daa7&amp;appKey=7c87bd8cc1bd7d46d633f4d944cd7d8d"</span>,
         dataType:<span class="hljs-string">"json"</span>,
-        method:<span class="hljs-string">"GET"</span>
+        method:<span class="hljs-string">"GET"</span>,
+        callback:urlString.queryparam
     };
 
     next();
@@ -532,6 +562,13 @@ app.get(<span class="hljs-string">'/weather'</span>, <span class="hljs-function"
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/newsFromKeyword'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"https"</span>);
     p = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.p);
 
@@ -590,6 +627,13 @@ app.get(<span class="hljs-string">'/newsFromKeyword'</span>, <span class="hljs-f
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/flickrFromKeyword'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"http"</span>);
     tags = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.tags);
 
@@ -648,6 +692,12 @@ app.get(<span class="hljs-string">'/flickrFromKeyword'</span>, <span class="hljs
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/flickrStaticImgUrl'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
 
     flickrUrl = urlString.queryparam.url;
     <span class="hljs-keyword">var</span> photoID = flickrUrl.match(<span class="hljs-regexp">/\/photos\/(.*)/</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">'/'</span>)[<span class="hljs-number">1</span>];
@@ -707,8 +757,8 @@ app.get(<span class="hljs-string">'/flickrStaticImgUrl'</span>, <span class="hlj
                 flickrStore = jsonp_store;
             }
 
+            res.writeHead(<span class="hljs-number">200</span>, { <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/json'</span>});
             res.write(flickrStore);
-            console.log(flickrStore);
             res.end();
 
         })
@@ -771,6 +821,13 @@ app.get(<span class="hljs-string">'/flickrStaticImgUrl'</span>, <span class="hlj
             
             <div class="content"><div class='highlight'><pre>
 app.get(<span class="hljs-string">'/hotels'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     http = <span class="hljs-built_in">require</span>(<span class="hljs-string">"https"</span>);
     city = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.city);
     state = <span class="hljs-built_in">encodeURIComponent</span>(urlString.queryparam.state);
@@ -796,6 +853,13 @@ app.get(<span class="hljs-string">'/hotels'</span>, <span class="hljs-function">
 
 
 app.use(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> {</span>
+    res.header(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"text/plain"</span>);
+
+    <span class="hljs-keyword">var</span> urlString = {
+        pathname: req.path,
+        queryparam: req.query
+    };
+
     <span class="hljs-keyword">var</span> store = <span class="hljs-string">" "</span>;
 
     http.request(options, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(response)</span> {</span>
@@ -843,8 +907,7 @@ app.use(<span class="hljs-function"><span class="hljs-keyword">function</span><s
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">if</span> (urlString.queryparam.callback &amp;&amp; urlString.queryparam.callback != <span class="hljs-string">'?'</span>) {
-                store = store.replace(<span class="hljs-regexp">/'/g</span>, <span class="hljs-string">"\\'"</span>);
-                jsonp_store = urlString.queryparam.callback + <span class="hljs-string">"('"</span> + store + <span class="hljs-string">"');"</span>;
+                jsonp_store = urlString.queryparam.callback + <span class="hljs-string">"("</span> + store + <span class="hljs-string">");"</span>;
                 store = jsonp_store;
             }
 
