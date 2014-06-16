@@ -44,7 +44,16 @@ var app = express();
 var server = http.createServer(app).listen(8081);
 
 
-
+// Airlines API
+// ------------
+// Just a little get to know me message
+app.get('/', function (req, res) {
+	welcome = {
+		"message": "Welcome to the Allegiant Air Challenge API",
+		"docs": "http://g4-dev.com:8081"
+	};
+	res.json(welcome);
+});
 
 
 
